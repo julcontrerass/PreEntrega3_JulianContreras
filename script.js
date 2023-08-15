@@ -93,17 +93,17 @@ document.addEventListener("DOMContentLoaded", () => {
     card.appendChild(nombre);
 
     const seccion = document.createElement("p");
-    seccion.contentEditable = true; // Permite editar directamente en la card
+    seccion.contentEditable = true; 
     seccion.textContent = producto.seccion;
     card.appendChild(seccion);
 
     const precio = document.createElement("p");
-    precio.contentEditable = true; // Permite editar directamente en la card
+    precio.contentEditable = true; 
     precio.textContent = `Precio: $${producto.valor.toFixed(2)}`;
     card.appendChild(precio);
 
     const stock = document.createElement("p");
-    stock.contentEditable = true; // Permite editar directamente en la card
+    stock.contentEditable = true; 
     stock.textContent = `Stock: ${producto.stock}`;
     card.appendChild(stock);
 
