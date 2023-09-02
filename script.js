@@ -4,10 +4,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const filtroSelect = document.getElementById("filtro-seccion");
   const buscarInput = document.getElementById("buscar");
   const buscarBtn = document.getElementById("buscar-btn");
+  const ordenarSelect = document.getElementById("ordenar");
 
   agregarBtn.addEventListener("click", agregarProducto);
   filtroSelect.addEventListener("change", filtrarProductos);
   buscarBtn.addEventListener("click", buscarProducto);
+  ordenarSelect.addEventListener("change", ordenarProductos); 
+
+  const filtrarAlfabeticamenteBtn = document.getElementById("filtrar-alfabeticamente");
+  filtrarAlfabeticamenteBtn.addEventListener("click", filtrarAlfabeticamente);
 
   // Cargar productos del local storage al cargar la página
   cargarProductos();
@@ -83,46 +88,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const card = document.createElement("div");
     card.className = "producto-card";
 
-    const imagen = document.createElement("img");
-    imagen.src = producto.imagen;
-    card.appendChild(imagen);
+    card.innerHTML = `
+      <img src="${producto.imagen}" />
+      <p contentEditable="true">${producto.nombre}</p>
+      <p>${producto.seccion}</p>
+      <p contentEditable="true">Precio: $${producto.valor.toFixed(2)}</p>
+      <p contentEditable="true">Stock: ${producto.stock}</p>
+      <div class="acciones">
+        <button class="editar">Editar</button>
+        <button class="eliminar">Eliminar</button>
+      </div>
+    `;
 
-    const nombre = document.createElement("p");
-    nombre.contentEditable = true; // Permite editar directamente en la card
-    nombre.textContent = producto.nombre;
-    card.appendChild(nombre);
-
-    const seccion = document.createElement("p");
-    seccion.contentEditable = true; 
-    seccion.textContent = producto.seccion;
-    card.appendChild(seccion);
-
-    const precio = document.createElement("p");
-    precio.contentEditable = true; 
-    precio.textContent = `Precio: $${producto.valor.toFixed(2)}`;
-    card.appendChild(precio);
-
-    const stock = document.createElement("p");
-    stock.contentEditable = true; 
-    stock.textContent = `Stock: ${producto.stock}`;
-    card.appendChild(stock);
-
-    const accionesDiv = document.createElement("div");
-    accionesDiv.className = "acciones";
-
-    const editarBtn = document.createElement("button");
-    editarBtn.className = "editar";
-    editarBtn.textContent = "Editar";
+    const editarBtn = card.querySelector(".editar");
     editarBtn.addEventListener("click", () => confirmarEditar(index, card));
-    accionesDiv.appendChild(editarBtn);
 
-    const eliminarBtn = document.createElement("button");
-    eliminarBtn.className = "eliminar";
-    eliminarBtn.textContent = "Eliminar";
+    const eliminarBtn = card.querySelector(".eliminar");
     eliminarBtn.addEventListener("click", () => confirmarEliminar(index));
-    accionesDiv.appendChild(eliminarBtn);
-
-    card.appendChild(accionesDiv);
 
     return card;
   }
@@ -148,7 +130,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const producto = productos[index];
 
     producto.nombre = card.querySelector("p:nth-child(2)").textContent;
-    producto.seccion = card.querySelector("p:nth-child(3)").textContent;
     producto.valor = parseFloat(
       card.querySelector("p:nth-child(4)").textContent.split(": $")[1]
     );
@@ -205,24 +186,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const seccionSeleccionada = filtroSelect.value;
 
     if (seccionSeleccionada === "todos") {
-        cargarProductos(); // Mostrar todos los productos
+      cargarProductos(); // Mostrar todos los productos
     } else {
-        const productos = JSON.parse(localStorage.getItem("productos")) || [];
-        const productosFiltrados = productos.filter(producto => producto.seccion === seccionSeleccionada);
+      const productos = JSON.parse(localStorage.getItem("productos")) || [];
+      const productosFiltrados = productos.filter(
+        (producto) => producto.seccion === seccionSeleccionada
+      );
 
-        if (productosFiltrados.length > 0) {
-            mostrarProductosFiltrados(productosFiltrados);
-        } else {
-            Swal.fire({
-                icon: "info",
-                title: "Sin Resultados",
-                text: "No se encontraron productos en esta sección."
-            }).then(() => {
-                cargarProductos();
-            });
-        }
+      if (productosFiltrados.length > 0) {
+        mostrarProductosFiltrados(productosFiltrados);
+      } else {
+        Swal.fire({
+          icon: "info",
+          title: "Sin Resultados",
+          text: "No se encontraron productos en esta sección."
+        }).then(() => {
+          cargarProductos();
+        });
+      }
     }
-}
+  }
 
   // Función para mostrar productos filtrados
   function mostrarProductosFiltrados(productosFiltrados) {
@@ -233,7 +216,31 @@ document.addEventListener("DOMContentLoaded", () => {
       productosContainer.appendChild(card);
     });
   }
+   // Función para ordenar productos por precio
+   function ordenarProductos() {
+    const orden = ordenarSelect.value;
 
+    const productos = JSON.parse(localStorage.getItem("productos")) || [];
+
+    if (orden === "ascendente") {
+      productos.sort((a, b) => a.valor - b.valor); // Ordenar de menor a mayor precio
+    } else if (orden === "descendente") {
+      productos.sort((a, b) => b.valor - a.valor); // Ordenar de mayor a menor precio
+    }
+
+    mostrarProductosFiltrados(productos);
+  }
+  
+   // Función para filtrar productos alfabéticamente
+   function filtrarAlfabeticamente() {
+    const productos = JSON.parse(localStorage.getItem("productos")) || [];
+
+    productos.sort((a, b) => a.nombre.localeCompare(b.nombre)); // Ordenar alfabéticamente por nombre
+
+    mostrarProductosFiltrados(productos);
+  }
+
+  
   // Función para buscar productos por término de búsqueda
   function buscarProducto() {
     const terminoBusqueda = buscarInput.value.toLowerCase();

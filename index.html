@@ -37,9 +37,9 @@
         <button class="Boton-agregar" id="agregar">Agregar Producto</button>
       </div>
       <input type="text" id="buscar" placeholder="Buscar producto" />
-      <button id="buscar-btn">Buscar</button>
+      <button class="Boton-alf" id="buscar-btn">Buscar</button>
       <select id="filtro-seccion">
-        <option value="todos">Todos</option>
+        <option value="todos">Seccion</option>
         <option value="Verduras">Verduras</option>
           <option value="Cereales y legumbres">Cereales y legumbres</option>
           <option value="Frutos del mar">Frutos del mar</option>
@@ -57,6 +57,12 @@
             Otros objetos necesarios
           </option>
       </select>
+      <select id="ordenar">
+        <option value="precio">Filtrar precio</option>
+        <option value="ascendente">Menor a Mayor Precio</option>
+        <option value="descendente">Mayor a Menor Precio</option>
+      </select>
+      <button class="Boton-alf" id="filtrar-alfabeticamente">A-Z</button>
       <div class="productos-container" id="productos-container">
         <!-- Aca se muestran los productos -->
       </div>
